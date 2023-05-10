@@ -15,7 +15,7 @@ public class ProductListPageServlet extends HttpServlet {
     ProductDao listProductDao;
     @Override
     public void init() {
-        listProductDao = new ArrayListProductDao();
+        listProductDao = ArrayListProductDao.getInstance();
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
