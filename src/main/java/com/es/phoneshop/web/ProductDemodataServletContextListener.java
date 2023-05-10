@@ -1,22 +1,25 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.dao.PriceHistoryDao;
 import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.dao.impl.ArrayListPriceHistoryDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
+import com.es.phoneshop.model.PriceHistory;
 import com.es.phoneshop.model.Product;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.time.LocalDate;
+import java.util.*;
 
 public class ProductDemodataServletContextListener implements ServletContextListener {
     private ProductDao productDao;
+    private PriceHistoryDao priceHistoryDao;
 
     public ProductDemodataServletContextListener() {
         this.productDao = ArrayListProductDao.getInstance();
+        this.priceHistoryDao = ArrayListPriceHistoryDao.getInstance();
     }
 
     @Override
@@ -25,6 +28,8 @@ public class ProductDemodataServletContextListener implements ServletContextList
         if(insertDemoData) {
             getSampleProducts().stream()
                     .forEach(product -> productDao.save(product));
+            getSamplePriceHistories().stream()
+                    .forEach(priceHistory -> priceHistoryDao.save(priceHistory));
         }
     }
 
@@ -50,5 +55,22 @@ public class ProductDemodataServletContextListener implements ServletContextList
         products.add(new Product( "simc61", "Siemens C61", new BigDecimal(80), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C61.jpg"));
         products.add(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg"));
         return products;
+    }
+
+    List<PriceHistory> getSamplePriceHistories() {
+        Currency usd = Currency.getInstance("USD");
+        List<PriceHistory> priceHistories = new ArrayList<>();
+        List<Product> products = productDao.findProducts(null, null, null);
+        for (Product product : products) {
+            LocalDate startDate = LocalDate.now();
+            List<PriceHistory> priceHistoryOfProduct = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                priceHistoryOfProduct.add(new PriceHistory(startDate.minusMonths(1 + (int) (Math.random() * 15)), new BigDecimal(150 + (int) (Math.random() * 500)), usd, product));
+            }
+            Collections.sort(priceHistoryOfProduct, Comparator.comparing(PriceHistory::getDate).reversed());
+            priceHistoryOfProduct.get(0).setPrice(product.getPrice());
+            priceHistories.addAll(priceHistoryOfProduct);
+        }
+        return priceHistories;
     }
 }

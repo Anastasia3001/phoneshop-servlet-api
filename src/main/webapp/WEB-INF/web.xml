@@ -36,9 +36,24 @@
     <url-pattern>/products/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>priceHistory</servlet-name>
+    <servlet-class>com.es.phoneshop.web.PriceHistoryPageServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>priceHistory</servlet-name>
+    <url-pattern>/priceHistory/*</url-pattern>
+  </servlet-mapping>
+
   <error-page>
     <location>/WEB-INF/pages/productNotFoundException.jsp</location>
     <exception-type>com.es.phoneshop.exception.ProductNotFoundException</exception-type>
+  </error-page>
+
+  <error-page>
+    <location>/WEB-INF/pages/error.jsp</location>
+    <error-code>500</error-code>
   </error-page>
 
 </web-app>
