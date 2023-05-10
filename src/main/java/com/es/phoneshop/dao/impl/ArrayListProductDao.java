@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ArrayListProductDao implements ProductDao {
     private List<Product> products = new ArrayList<>();
@@ -48,10 +49,30 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> findProducts() {
-        return lock.read(() -> products.stream()
-                .filter(product -> product.getPrice() != null && product.getStock() > 0)
-                .collect(Collectors.toList()));
+    public List<Product> findProducts(String description) {
+        return lock.read(() -> {
+            List<Product> foundProducts = products.stream()
+                    .filter(product -> product.getPrice() != null && product.getStock() > 0)
+                    .collect(Collectors.toList());
+            if (description != null) {
+                List<String> words = Stream.of(description.split("[^A-Za-z0-9I]+"))
+                        .distinct()
+                        .collect(Collectors.toList());
+                return foundProducts.stream()
+                        .filter(product -> description.isEmpty() || countWordsInDescription(words, product.getDescription()) != 0)
+                        .sorted((x, y) -> (int) (countWordsInDescription(words, y.getDescription()) - countWordsInDescription(words, x.getDescription())))
+                        .collect(Collectors.toList());
+            }
+            return foundProducts;
+        });
+    }
+
+    private long countWordsInDescription(List<String> words, String description) {
+        return words.stream()
+                .filter(word -> Stream.of(description.split("[^A-Za-z0-9I]+"))
+                        .distinct()
+                        .filter(w -> w.equals(word)).count() == 1)
+                .count();
     }
 
     @Override
