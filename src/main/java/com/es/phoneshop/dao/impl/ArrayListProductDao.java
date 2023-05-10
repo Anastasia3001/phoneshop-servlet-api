@@ -2,14 +2,13 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.FunctionalReadWriteLock;
 import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.enums.SortingField;
+import com.es.phoneshop.enums.SortingType;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.Product;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,7 +48,7 @@ public class ArrayListProductDao implements ProductDao {
     }
 
     @Override
-    public List<Product> findProducts(String description) {
+    public List<Product> findProducts(String description, SortingField sortingField, SortingType sortingType) {
         return lock.read(() -> {
             List<Product> foundProducts = products.stream()
                     .filter(product -> product.getPrice() != null && product.getStock() > 0)
@@ -58,14 +57,41 @@ public class ArrayListProductDao implements ProductDao {
                 List<String> words = Stream.of(description.split("[^A-Za-z0-9I]+"))
                         .distinct()
                         .collect(Collectors.toList());
-                return foundProducts.stream()
+                foundProducts = foundProducts.stream()
                         .filter(product -> description.isEmpty() || countWordsInDescription(words, product.getDescription()) != 0)
                         .sorted((x, y) -> (int) (countWordsInDescription(words, y.getDescription()) - countWordsInDescription(words, x.getDescription())))
                         .collect(Collectors.toList());
             }
-            return foundProducts;
+            return sortProducts(foundProducts, sortingField, sortingType);
         });
     }
+
+
+    private List<Product> sortProducts(List<Product> products, SortingField sortingField, SortingType sortingType) {
+        if (sortingField != null && SortingField.description == sortingField) {
+            if (SortingType.asc == sortingType) {
+                return products.stream()
+                        .sorted(Comparator.comparing(Product::getDescription))
+                        .collect(Collectors.toList());
+            } else {
+                return products.stream()
+                        .sorted(Comparator.comparing(Product::getDescription).reversed())
+                        .collect(Collectors.toList());
+            }
+        } else if(sortingField != null && SortingField.price == sortingField) {
+            if (SortingType.asc == sortingType) {
+                return products.stream()
+                        .sorted(Comparator.comparing(Product::getPrice))
+                        .collect(Collectors.toList());
+            } else {
+                return products.stream()
+                        .sorted(Comparator.comparing(Product::getPrice).reversed())
+                        .collect(Collectors.toList());
+            }
+        }
+        return products;
+    }
+
 
     private long countWordsInDescription(List<String> words, String description) {
         return words.stream()
