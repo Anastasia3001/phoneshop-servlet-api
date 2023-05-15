@@ -8,12 +8,24 @@
   <p>
     Welcome to Expert-Soft training!
   </p>
+  <form>
+    <input type="text" name="description" value="${param.description}">
+    <button>Search</button>
+  </form>
   <table>
     <thead>
       <tr>
         <td>Image</td>
-        <td>Description</td>
-        <td class="price">Price</td>
+        <td>
+          Description
+          <tags:sortLink sorting="DESCRIPTION" type="ASC"></tags:sortLink>
+          <tags:sortLink sorting="DESCRIPTION" type="DESC"></tags:sortLink>
+        </td>
+        <td class="price">
+          Price
+          <tags:sortLink sorting="PRICE" type="ASC"></tags:sortLink>
+          <tags:sortLink sorting="PRICE" type="DESC"></tags:sortLink>
+        </td>
       </tr>
     </thead>
     <c:forEach var="product" items="${products}">
@@ -21,9 +33,15 @@
         <td>
           <img class="product-tile" src="${product.imageUrl}">
         </td>
-        <td>${product.description}</td>
+        <td>
+          <a href="${pageContext.servletContext.contextPath}/products/${product.id}">
+              ${product.description}
+          </a>
+        </td>
         <td class="price">
-          <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+          <a href='#' onclick='javascript:window.open("${pageContext.servletContext.contextPath}/priceHistory/${product.id}", "_blank", "scrollbars=1,resizable=1,height=300,width=450");' title='Pop Up'>
+            <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+          </a>
         </td>
       </tr>
     </c:forEach>
