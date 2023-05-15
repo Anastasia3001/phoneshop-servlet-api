@@ -6,8 +6,9 @@ import com.es.phoneshop.enums.SortingField;
 import com.es.phoneshop.enums.SortingType;
 import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.Product;
+import com.es.phoneshop.model.comparator.DescriptionAndPriceComparator;
+import com.es.phoneshop.model.comparator.DescriptionComparator;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -35,7 +36,8 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public Product getProduct(Long id) {
         return lock.read(() -> {
-            if (id == null) throw new IllegalArgumentException("Unable to find product with null id");
+            Optional.ofNullable(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Unable to find product with null id"));
             return products.stream()
                     .filter(product -> product.getId().equals(id))
                     .findAny()
@@ -48,59 +50,25 @@ public class ArrayListProductDao implements ProductDao {
         return lock.read(() -> {
             List<Product> foundProducts = products.stream()
                     .filter(product -> product.getPrice() != null && product.getStock() > 0)
+                    .filter(product -> description == null || description.isEmpty() || countMatchingWords(product.getDescription(), description) != 0)
+                    .sorted(new DescriptionComparator(description))
+                    .sorted(new DescriptionAndPriceComparator(sortingField, sortingType))
                     .collect(Collectors.toList());
-            if (description != null) {
-                List<String> words = Stream.of(description.split("[^A-Za-z0-9I]+"))
-                        .distinct()
-                        .collect(Collectors.toList());
-                foundProducts = foundProducts.stream()
-                        .filter(product -> description.isEmpty() || countWordsInDescription(words, product.getDescription()) != 0)
-                        .sorted((x, y) -> (int) (countWordsInDescription(words, y.getDescription()) - countWordsInDescription(words, x.getDescription())))
-                        .collect(Collectors.toList());
-            }
-            return sortProducts(foundProducts, sortingField, sortingType);
+            return foundProducts;
         });
     }
 
-
-    private List<Product> sortProducts(List<Product> products, SortingField sortingField, SortingType sortingType) {
-        if (sortingField != null && SortingField.description == sortingField) {
-            if (SortingType.asc == sortingType) {
-                return products.stream()
-                        .sorted(Comparator.comparing(Product::getDescription))
-                        .collect(Collectors.toList());
-            } else {
-                return products.stream()
-                        .sorted(Comparator.comparing(Product::getDescription).reversed())
-                        .collect(Collectors.toList());
-            }
-        } else if(sortingField != null && SortingField.price == sortingField) {
-            if (SortingType.asc == sortingType) {
-                return products.stream()
-                        .sorted(Comparator.comparing(Product::getPrice))
-                        .collect(Collectors.toList());
-            } else {
-                return products.stream()
-                        .sorted(Comparator.comparing(Product::getPrice).reversed())
-                        .collect(Collectors.toList());
-            }
-        }
-        return products;
-    }
-
-
-    private long countWordsInDescription(List<String> words, String description) {
-        return words.stream()
-                .filter(word -> Stream.of(description.split("[^A-Za-z0-9I]+"))
-                        .distinct()
-                        .filter(w -> w.equals(word)).count() == 1)
+    public static long countMatchingWords(String productDescription, String description) {
+        return Stream.of(description.split("[^A-Za-z0-9I]+"))
+                        .filter(word -> productDescription.contains(word))
                 .count();
     }
 
     @Override
     public void save(Product product) {
         lock.write(() -> {
-            if (product == null) throw new IllegalArgumentException("Product equals null");
+            Optional.ofNullable(product)
+                    .orElseThrow(() -> new IllegalArgumentException("Product equals null"));
             Optional.ofNullable(product.getId())
                     .ifPresentOrElse(
                             (id) -> {
@@ -117,7 +85,7 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public void delete(Long id) {
         lock.write(() -> {
-            products.remove(getProduct(id));
+            products.removeIf(product -> product.getId().equals(id));
         });
     }
 }

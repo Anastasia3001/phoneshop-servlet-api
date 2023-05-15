@@ -1,8 +1,12 @@
 //package com.es.phoneshop.dao.impl;
 //
 //import com.es.phoneshop.dao.ProductDao;
+//import com.es.phoneshop.enums.SortingField;
 //import com.es.phoneshop.exception.ProductNotFoundException;
 //import com.es.phoneshop.model.Product;
+//import com.es.phoneshop.web.ProductDemodataServletContextListener;
+//import jakarta.servlet.ServletContextEvent;
+//import jakarta.servlet.ServletContextListener;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //
@@ -16,10 +20,13 @@
 //
 //public class ArrayListProductDaoTest {
 //    private ProductDao productDao;
+//    private static final String DESCRIPTION = "Samsung Galaxy S";
+//    private static final SortingField SORTING_DESCRIPTION = SortingField.DESCRIPTION;
+//    private static final SortingField SORTING_PRICE = SortingField.PRICE;
 //
 //    @BeforeEach
 //    public void setup() {
-//        productDao = new ArrayListProductDao();
+//        productDao = ArrayListProductDao.getInstance();
 //    }
 //
 //    @Test

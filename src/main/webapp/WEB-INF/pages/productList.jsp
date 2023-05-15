@@ -18,13 +18,13 @@
         <td>Image</td>
         <td>
           Description
-          <a href="?sorting=description&type=asc&description=${param.description}">asc</a>
-          <a href="?sorting=description&type=desc&description=${param.description}">desc</a>
+          <tags:sortLink sorting="DESCRIPTION" type="ASC"></tags:sortLink>
+          <tags:sortLink sorting="DESCRIPTION" type="DESC"></tags:sortLink>
         </td>
         <td class="price">
           Price
-          <a href="?sorting=price&type=asc&description=${param.description}">asc</a>
-          <a href="?sorting=price&type=desc&description=${param.description}">desc</a>
+          <tags:sortLink sorting="PRICE" type="ASC"></tags:sortLink>
+          <tags:sortLink sorting="PRICE" type="DESC"></tags:sortLink>
         </td>
       </tr>
     </thead>

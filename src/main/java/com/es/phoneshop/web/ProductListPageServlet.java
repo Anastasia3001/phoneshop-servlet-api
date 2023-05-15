@@ -12,17 +12,21 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ProductListPageServlet extends HttpServlet {
-    ProductDao listProductDao;
+    private ProductDao listProductDao;
+    private static final String DESCRIPTION = "description";
+    private static final String SORTING = "sorting";
+    private static final String TYPE = "type";
+    private static final String PRODUCTS = "products";
     @Override
     public void init() {
         listProductDao = ArrayListProductDao.getInstance();
     }
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String description = request.getParameter("description");
-        String sortingField = request.getParameter("sorting");
-        String sortingType = request.getParameter("type");
-        request.setAttribute("products", listProductDao.findProducts(description,
+        String description = request.getParameter(DESCRIPTION);
+        String sortingField = request.getParameter(SORTING);
+        String sortingType = request.getParameter(TYPE);
+        request.setAttribute(PRODUCTS, listProductDao.findProducts(description,
                 sortingField != null ? SortingField.valueOf(sortingField) : null,
                 sortingType != null ? SortingType.valueOf(sortingType) : null));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
