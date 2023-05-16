@@ -14,7 +14,9 @@ public class DescriptionComparator implements Comparator<Product> {
 
     @Override
     public int compare(Product product1, Product product2) {
-        if (description == null) return 0;
+        if (description == null) {
+            return 0;
+        }
         return (int) (ArrayListProductDao.countMatchingWords(product2.getDescription(), description) -
                 ArrayListProductDao.countMatchingWords(product1.getDescription(), description));
     }
