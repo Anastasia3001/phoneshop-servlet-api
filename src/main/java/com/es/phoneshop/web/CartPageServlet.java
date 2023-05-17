@@ -12,10 +12,12 @@ import java.io.IOException;
 public class CartPageServlet extends HttpServlet {
     private CartService cartService;
     private static final String CART_ITEMS = "cartItems";
+
     @Override
     public void init() {
         cartService = CartServiceImpl.getInstance();
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute(CART_ITEMS, cartService.getCart(request).getCartItems());

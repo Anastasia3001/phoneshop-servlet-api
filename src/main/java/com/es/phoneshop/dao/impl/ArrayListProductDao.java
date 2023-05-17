@@ -62,7 +62,7 @@ public class ArrayListProductDao implements ProductDao {
 
     public static long countMatchingWords(String productDescription, String description) {
         return Stream.of(description.split("[^A-Za-z0-9I]+"))
-                        .filter(word -> productDescription.contains(word))
+                .filter(word -> productDescription.contains(word))
                 .count();
     }
 

@@ -38,6 +38,18 @@ img.product-tile {
   color: limegreen;
   font-size: 21px;
 }
+#mainDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 50px;
+}
+td {
+  text-align: center;
+}
+h1 {
+  text-align: center;
+}
 /* Page specific styles */
 body.product-list {
 
