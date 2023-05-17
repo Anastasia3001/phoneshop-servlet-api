@@ -16,12 +16,11 @@ import java.util.Optional;
 
 public class CartServiceImpl implements CartService {
     private ProductDao productDao;
-    private Cart cart;
     private final FunctionalReadWriteLock lock;
+    private static final String SEPARATE_CARD_SESSION_ATTRIBUTE = CartServiceImpl.class.getName() + ".cart";
 
     private CartServiceImpl() {
         this.productDao = ArrayListProductDao.getInstance();
-        cart = new Cart();
         lock = new FunctionalReadWriteLock();
     }
 
@@ -34,7 +33,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void add(Long productId, int quantity) {
+    public void add(Cart cart, Long productId, int quantity) {
         lock.write(() -> {
             Product product = productDao.getProduct(productId);
             if (product.getStock() < quantity) {
@@ -54,8 +53,13 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart getCart() {
+    public Cart getCart(HttpServletRequest request) {
         return lock.read(() -> {
+            HttpSession session = request.getSession();
+            Cart cart = (Cart) session.getAttribute(SEPARATE_CARD_SESSION_ATTRIBUTE);
+            if (!Optional.ofNullable(cart).isPresent()) {
+                session.setAttribute(SEPARATE_CARD_SESSION_ATTRIBUTE, cart = new Cart());
+            }
             return cart;
         });
     }

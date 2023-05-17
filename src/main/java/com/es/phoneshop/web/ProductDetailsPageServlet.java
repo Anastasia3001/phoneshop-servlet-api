@@ -48,8 +48,9 @@ public class ProductDetailsPageServlet extends HttpServlet {
             doGet(request, response);
             return;
         }
+        Cart cart = cartService.getCart(request);
         try {
-            cartService.add(productId, quantity);
+            cartService.add(cart, productId, quantity);
         } catch (OutOfStockException e) {
             request.setAttribute(ERROR, "Not enough stock");
             doGet(request, response);
