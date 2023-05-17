@@ -15,7 +15,7 @@
   <table>
     <thead>
       <tr>
-        <td>Image</td>
+        <td>ImageQWER</td>
         <td>
           Description
           <tags:sortLink sorting="DESCRIPTION" type="ASC"></tags:sortLink>

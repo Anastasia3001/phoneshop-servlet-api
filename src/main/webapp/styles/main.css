@@ -27,6 +27,17 @@ td {
 img.product-tile {
   max-width: 64px;
 }
+.error {
+  color: red;
+}
+.errorGeneral {
+  color: red;
+  font-size: 21px;
+}
+.message {
+  color: limegreen;
+  font-size: 21px;
+}
 /* Page specific styles */
 body.product-list {
 
