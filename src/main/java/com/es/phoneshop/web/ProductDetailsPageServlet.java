@@ -25,7 +25,6 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private static final String PRODUCT = "product";
     private static final String QUANTITY = "quantity";
     private static final String ERROR = "error";
-    private static final String MESSAGE = "message";
     private static final String RECENTLY_VIEWED_PRODUCTS = "recentlyViewedProducts";
 
     @Override
@@ -38,10 +37,10 @@ public class ProductDetailsPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Long productId = getProductIdFromUrl(request);
-        BrowsingHistory browsingHistory = browsingHistoryService.getBrowsingHistory(request);
         request.setAttribute(PRODUCT, listProductDao.getProduct(productId));
-        request.setAttribute(RECENTLY_VIEWED_PRODUCTS, browsingHistory.getProducts());
+        request.setAttribute(RECENTLY_VIEWED_PRODUCTS, browsingHistoryService.getBrowsingHistory(request).getProducts());
         request.getRequestDispatcher("/WEB-INF/pages/productDetails.jsp").forward(request, response);
+        BrowsingHistory browsingHistory = browsingHistoryService.getBrowsingHistory(request);
         browsingHistoryService.add(browsingHistory, productId);
     }
 
@@ -50,23 +49,24 @@ public class ProductDetailsPageServlet extends HttpServlet {
         Long productId = getProductIdFromUrl(request);
         int quantity;
         try {
+            String quantityValue = request.getParameter(QUANTITY);
+            if (!quantityValue.matches("^\\d+$")) {
+                throw new NumberFormatException();
+            }
             NumberFormat format = NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(request.getParameter(QUANTITY)).intValue();
-        } catch (ParseException ex) {
+            quantity = format.parse(quantityValue).intValue();
+            Cart cart = cartService.getCart(request);
+            cartService.add(cart, productId, quantity);
+        } catch (ParseException | NumberFormatException e) {
             request.setAttribute(ERROR, "Not a number");
             doGet(request, response);
             return;
-        }
-        Cart cart = cartService.getCart(request);
-        try {
-            cartService.add(cart, productId, quantity);
         } catch (OutOfStockException e) {
-            request.setAttribute(ERROR, "Not enough stock");
+            request.setAttribute(ERROR, e.getMessage());
             doGet(request, response);
             return;
         }
-        request.setAttribute(MESSAGE, "Added to cart successfully");
-        response.sendRedirect(request.getContextPath() + "/products/" + productId + "?message=Added to cart successfully");
+        response.sendRedirect(String.format("%s/products/%d?message=Added to card successfully", request.getContextPath(), productId));
     }
 
     private Long getProductIdFromUrl(HttpServletRequest request) {

@@ -1,20 +1,21 @@
 package com.es.phoneshop.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BrowsingHistory {
-    private List<Product> products;
+    private LinkedList<Product> products;
 
     public BrowsingHistory() {
-        products = new ArrayList<>();
+        products = new LinkedList<>();
     }
 
-    public List<Product> getProducts() {
+    public LinkedList<Product> getProducts() {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(LinkedList<Product> products) {
         this.products = products;
     }
 }

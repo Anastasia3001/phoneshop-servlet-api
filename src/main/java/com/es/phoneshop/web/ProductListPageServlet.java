@@ -32,10 +32,10 @@ public class ProductListPageServlet extends HttpServlet {
         String description = request.getParameter(DESCRIPTION);
         String sortingField = request.getParameter(SORTING);
         String sortingType = request.getParameter(TYPE);
-        BrowsingHistory browsingHistory = browsingHistoryService.getBrowsingHistory(request);
         request.setAttribute(PRODUCTS, listProductDao.findProducts(description,
                 sortingField != null ? SortingField.valueOf(sortingField) : null,
                 sortingType != null ? SortingType.valueOf(sortingType) : null));
+        BrowsingHistory browsingHistory = browsingHistoryService.getBrowsingHistory(request);
         request.setAttribute(RECENTLY_VIEWED_PRODUCTS, browsingHistory.getProducts());
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
