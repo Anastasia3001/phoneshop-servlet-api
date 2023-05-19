@@ -16,11 +16,13 @@ public class PriceHistoryPageServlet extends HttpServlet {
     private ProductDao productDao;
     private static final String PRICE_HISTORY = "priceHistory";
     private static final String PRODUCT = "product";
+
     @Override
     public void init() {
         priceHistoryDao = ArrayListPriceHistoryDao.getInstance();
         productDao = ArrayListProductDao.getInstance();
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String productId = request.getPathInfo();

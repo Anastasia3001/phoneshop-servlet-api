@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface PriceHistoryDao {
     List<PriceHistory> getPriceHistoryOfProduct(Long productId);
-    void save (PriceHistory priceHistory);
+
+    void save(PriceHistory priceHistory);
 }

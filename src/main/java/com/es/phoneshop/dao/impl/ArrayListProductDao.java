@@ -9,7 +9,9 @@ import com.es.phoneshop.model.Product;
 import com.es.phoneshop.model.comparator.DescriptionAndPriceComparator;
 import com.es.phoneshop.model.comparator.DescriptionComparator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,7 +62,7 @@ public class ArrayListProductDao implements ProductDao {
 
     public static long countMatchingWords(String productDescription, String description) {
         return Stream.of(description.split("[^A-Za-z0-9I]+"))
-                        .filter(word -> productDescription.contains(word))
+                .filter(word -> productDescription.contains(word))
                 .count();
     }
 
