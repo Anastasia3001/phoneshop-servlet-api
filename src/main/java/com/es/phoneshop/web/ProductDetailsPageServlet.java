@@ -49,24 +49,24 @@ public class ProductDetailsPageServlet extends HttpServlet {
         Long productId = getProductIdFromUrl(request);
         int quantity;
         try {
-            String quantityValue = request.getParameter(QUANTITY);
-            if (!quantityValue.matches("^\\d+$")) {
-                throw new NumberFormatException();
-            }
-            NumberFormat format = NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(quantityValue).intValue();
+            quantity = validateQuantity(request);
             Cart cart = cartService.getCart(request);
             cartService.add(cart, productId, quantity);
-        } catch (ParseException | NumberFormatException e) {
-            request.setAttribute(ERROR, "Not a number");
-            doGet(request, response);
-            return;
-        } catch (OutOfStockException e) {
+        } catch (ParseException | NumberFormatException | OutOfStockException e) {
             request.setAttribute(ERROR, e.getMessage());
             doGet(request, response);
             return;
         }
         response.sendRedirect(String.format("%s/products/%d?message=Added to card successfully", request.getContextPath(), productId));
+    }
+
+    private int validateQuantity(HttpServletRequest request) throws ParseException {
+        String quantityValue = request.getParameter(QUANTITY);
+        if (!quantityValue.matches("^\\d+$")) {
+            throw new NumberFormatException("Not a number");
+        }
+        NumberFormat format = NumberFormat.getInstance(request.getLocale());
+        return format.parse(quantityValue).intValue();
     }
 
     private Long getProductIdFromUrl(HttpServletRequest request) {

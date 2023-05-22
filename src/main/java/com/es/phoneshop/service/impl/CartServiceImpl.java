@@ -37,9 +37,7 @@ public class CartServiceImpl implements CartService {
     public void add(Cart cart, Long productId, int quantity) {
         lock.write(() -> {
             Product product = productDao.getProduct(productId);
-            Optional<CartItem> foundCartItem = cart.getCartItems().stream()
-                    .filter(cartItem -> cartItem.getProduct().getId().equals(product.getId()))
-                    .findFirst();
+            Optional<CartItem> foundCartItem = getCartItem(cart, product);
             if (product.getStock() < quantity || (foundCartItem.isPresent() && foundCartItem.get().getQuantity() + quantity > product.getStock())) {
                 throw new OutOfStockException("Not enough stock");
             }
@@ -50,6 +48,26 @@ public class CartServiceImpl implements CartService {
                 cart.getCartItems().add(new CartItem(product, quantity));
             }
         });
+    }
+
+    @Override
+    public void update(Cart cart, Long productId, int quantity) {
+        lock.write(() -> {
+            Product product = productDao.getProduct(productId);
+            Optional<CartItem> foundCartItem = getCartItem(cart, product);
+            if (product.getStock() < quantity) {
+                throw new OutOfStockException("Not enough stock");
+            }
+            if (foundCartItem.isPresent()) {
+                foundCartItem.get().setQuantity(quantity);
+            }
+        });
+    }
+
+    private Optional<CartItem> getCartItem(Cart cart, Product product) {
+        return cart.getCartItems().stream()
+                .filter(cartItem -> cartItem.getProduct().getId().equals(product.getId()))
+                .findFirst();
     }
 
     @Override
