@@ -22,6 +22,8 @@ public class ProductListPageServlet extends HttpServlet {
     private static final String TYPE = "type";
     private static final String PRODUCTS = "products";
     private static final String RECENTLY_VIEWED_PRODUCTS = "recentlyViewedProducts";
+    private static final String PRODUCT_LIST_JSP = "/WEB-INF/pages/productList.jsp";
+
     @Override
     public void init() {
         listProductDao = ArrayListProductDao.getInstance();
@@ -37,6 +39,6 @@ public class ProductListPageServlet extends HttpServlet {
                 sortingType != null ? SortingType.valueOf(sortingType) : null));
         BrowsingHistory browsingHistory = browsingHistoryService.getBrowsingHistory(request);
         request.setAttribute(RECENTLY_VIEWED_PRODUCTS, browsingHistory.getProducts());
-        request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
+        request.getRequestDispatcher(PRODUCT_LIST_JSP).forward(request, response);
     }
 }

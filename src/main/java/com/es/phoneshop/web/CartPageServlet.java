@@ -21,6 +21,9 @@ public class CartPageServlet extends HttpServlet {
     private static final String PRODUCT_ID = "productId";
     private static final String QUANTITY = "quantity";
     private static final String ERROR = "error";
+    private static final String ERRORS = "errors";
+    private static final String CART = "cart";
+    private static final String CART_JSP = "/WEB-INF/pages/cart.jsp";
 
     @Override
     public void init() {
@@ -30,7 +33,8 @@ public class CartPageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute(CART_ITEMS, cartService.getCart(request).getCartItems());
-        request.getRequestDispatcher("/WEB-INF/pages/cart.jsp").forward(request, response);
+        request.setAttribute(CART, cartService.getCart(request));
+        request.getRequestDispatcher(CART_JSP).forward(request, response);
     }
 
     @Override
@@ -53,7 +57,7 @@ public class CartPageServlet extends HttpServlet {
             response.sendRedirect(String.format("%s/cart?message=Cart updated successfully", request.getContextPath()));
         }
         else {
-            request.setAttribute("errors", errors);
+            request.setAttribute(ERRORS, errors);
             doGet(request, response);
         }
     }

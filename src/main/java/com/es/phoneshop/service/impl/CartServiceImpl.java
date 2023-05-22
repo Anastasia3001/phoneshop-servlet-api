@@ -4,7 +4,6 @@ import com.es.phoneshop.FunctionalReadWriteLock;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.dao.impl.ArrayListProductDao;
 import com.es.phoneshop.exception.OutOfStockException;
-import com.es.phoneshop.exception.ProductNotFoundException;
 import com.es.phoneshop.model.Cart;
 import com.es.phoneshop.model.CartItem;
 import com.es.phoneshop.model.Product;
@@ -13,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.util.WebUtils;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 public class CartServiceImpl implements CartService {
@@ -43,8 +43,7 @@ public class CartServiceImpl implements CartService {
             }
             if (foundCartItem.isPresent()) {
                 foundCartItem.get().setQuantity(foundCartItem.get().getQuantity() + quantity);
-            }
-            else {
+            } else {
                 cart.getCartItems().add(new CartItem(product, quantity));
             }
         });
@@ -84,5 +83,12 @@ public class CartServiceImpl implements CartService {
             }
         }
         return cart;
+    }
+
+    @Override
+    public void delete(Cart cart, Long productId) {
+        lock.write(() -> {
+            cart.getCartItems().removeIf(item -> productId.equals(item.getProduct().getId()));
+        });
     }
 }
