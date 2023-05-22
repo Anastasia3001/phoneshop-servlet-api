@@ -6,6 +6,9 @@
 <jsp:useBean id="cartItems" type="java.util.ArrayList" scope="request"/>
 <tags:master pageTitle="Cart">
     </br>
+    <p>
+        Total quantity: ${cart.totalQuantity}
+    </p>
     <c:if test="${not empty param.message && empty error}">
         <p class="message">
                 ${param.message}
@@ -61,6 +64,12 @@
                     </td>
                 </tr>
             </c:forEach>
+            <tr>
+                <td colspan="3">Total cost</td>
+                <td colspan="2">
+                    <fmt:formatNumber value="${cart.totalCost}" type="currency" currencySymbol="$"/>
+                </td>
+            </tr>
         </table>
         <p>
             <button>Update</button>

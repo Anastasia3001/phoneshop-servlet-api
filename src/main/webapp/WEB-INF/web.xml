@@ -66,6 +66,16 @@
     <url-pattern>/cart/deleteCartItem/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>miniCart</servlet-name>
+    <servlet-class>com.es.phoneshop.web.MiniCartServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>miniCart</servlet-name>
+    <url-pattern>/cart/miniCart</url-pattern>
+  </servlet-mapping>
+
   <error-page>
     <location>/WEB-INF/pages/productNotFoundException.jsp</location>
     <exception-type>com.es.phoneshop.exception.ProductNotFoundException</exception-type>

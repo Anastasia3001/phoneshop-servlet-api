@@ -46,6 +46,7 @@ public class CartServiceImpl implements CartService {
             } else {
                 cart.getCartItems().add(new CartItem(product, quantity));
             }
+            calculateCart(cart);
         });
     }
 
@@ -60,6 +61,7 @@ public class CartServiceImpl implements CartService {
             if (foundCartItem.isPresent()) {
                 foundCartItem.get().setQuantity(quantity);
             }
+            calculateCart(cart);
         });
     }
 
@@ -89,6 +91,15 @@ public class CartServiceImpl implements CartService {
     public void delete(Cart cart, Long productId) {
         lock.write(() -> {
             cart.getCartItems().removeIf(item -> productId.equals(item.getProduct().getId()));
+            calculateCart(cart);
         });
+    }
+    private void calculateCart(Cart cart) {
+        cart.setTotalQuantity(cart.getCartItems().stream()
+                .mapToInt(cartItem -> cartItem.getQuantity())
+                .sum());
+        cart.setTotalCost(cart.getCartItems().stream()
+                .map(cartItem -> cartItem.getProduct().getPrice().multiply(new BigDecimal(cartItem.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
     }
 }
