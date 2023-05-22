@@ -54,7 +54,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCart(HttpServletRequest request) {
-        Cart cart = null;
+        Cart cart = new Cart();
         HttpSession session = request.getSession(false);
         if (session != null) {
             Object mutex = WebUtils.getSessionMutex(session);

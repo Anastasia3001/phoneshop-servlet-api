@@ -50,7 +50,7 @@ public class BrowsingHistoryServiceImpl implements BrowsingHistoryService {
 
     @Override
     public BrowsingHistory getBrowsingHistory(HttpServletRequest request) {
-        BrowsingHistory browsingHistory = null;
+        BrowsingHistory browsingHistory = new BrowsingHistory();
         HttpSession session = request.getSession(false);
         if (session != null) {
             Object mutex = WebUtils.getSessionMutex(session);

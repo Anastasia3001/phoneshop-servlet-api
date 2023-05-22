@@ -1,6 +1,8 @@
 package com.es.phoneshop.model;
 
-public class CartItem {
+import java.io.Serializable;
+
+public class CartItem implements Serializable {
     private Long id;
     private Product product;
     private int quantity;

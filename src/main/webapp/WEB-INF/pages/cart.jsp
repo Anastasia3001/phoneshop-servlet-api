@@ -6,29 +6,35 @@
 <jsp:useBean id="cartItems" type="java.util.ArrayList" scope="request"/>
 <tags:master pageTitle="Cart">
     </br>
-    <form method="post" action="">
+    <table>
+        <thead>
+        <tr>
+            <td>Image</td>
+            <td>Description</td>
+            <td>Quantity</td>
+            <td class="price">Price</td>
+        </tr>
+        </thead>
         <c:forEach var="cartItem" items="${cartItems}">
-            <table>
-                <tr>
-                    <td>Image</td>
-                    <td><img src="${cartItem.product.imageUrl}"></td>
-                </tr>
-                <tr>
-                    <td>Code</td>
-                    <td>${cartItem.product.code}</td>
-                </tr>
-                <tr>
-                    <td>Quantity</td>
-                    <td>${cartItem.quantity}</td>
-                </tr>
-                <tr>
-                    <td>Price</td>
-                    <td>
+            <tr>
+                <td>
+                    <img class="product-tile" src="${cartItem.product.imageUrl}">
+                </td>
+                <td>
+                    <a href="${pageContext.servletContext.contextPath}/products/${cartItem.product.id}">
+                            ${cartItem.product.description}
+                    </a>
+                </td>
+                <td>${cartItem.quantity}</td>
+                <td class="price">
+                    <a href='#'
+                       onclick='javascript:window.open("${pageContext.servletContext.contextPath}/priceHistory/${cartItem.product.id}", "_blank", "scrollbars=1,resizable=1,height=300,width=450");'
+                       title='Pop Up'>
                         <fmt:formatNumber value="${cartItem.product.price}" type="currency"
                                           currencySymbol="${cartItem.product.currency.symbol}"/>
-                    </td>
-                </tr>
-            </table>
+                    </a>
+                </td>
+            </tr>
         </c:forEach>
-    </form>
+    </table>
 </tags:master>
