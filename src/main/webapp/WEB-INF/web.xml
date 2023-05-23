@@ -21,6 +21,11 @@
     <url-pattern>/products</url-pattern>
   </servlet-mapping>
 
+  <servlet-mapping>
+    <servlet-name>productList</servlet-name>
+    <url-pattern>/products/addCartItem/*</url-pattern>
+  </servlet-mapping>
+
   <context-param>
     <param-name>insertDemoData</param-name>
     <param-value>true</param-value>

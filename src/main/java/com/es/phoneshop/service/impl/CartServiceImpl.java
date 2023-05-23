@@ -94,6 +94,7 @@ public class CartServiceImpl implements CartService {
             calculateCart(cart);
         });
     }
+
     private void calculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getCartItems().stream()
                 .mapToInt(cartItem -> cartItem.getQuantity())
