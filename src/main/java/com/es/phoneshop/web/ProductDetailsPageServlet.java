@@ -26,6 +26,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private static final String QUANTITY = "quantity";
     private static final String ERROR = "error";
     private static final String RECENTLY_VIEWED_PRODUCTS = "recentlyViewedProducts";
+    private static final String PRODUCT_DETAILS_JSP = "/WEB-INF/pages/productDetails.jsp";
 
     @Override
     public void init() {
@@ -39,7 +40,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
         Long productId = getProductIdFromUrl(request);
         request.setAttribute(PRODUCT, listProductDao.getProduct(productId));
         request.setAttribute(RECENTLY_VIEWED_PRODUCTS, browsingHistoryService.getBrowsingHistory(request).getProducts());
-        request.getRequestDispatcher("/WEB-INF/pages/productDetails.jsp").forward(request, response);
+        request.getRequestDispatcher(PRODUCT_DETAILS_JSP).forward(request, response);
         BrowsingHistory browsingHistory = browsingHistoryService.getBrowsingHistory(request);
         browsingHistoryService.add(browsingHistory, productId);
     }
@@ -49,24 +50,24 @@ public class ProductDetailsPageServlet extends HttpServlet {
         Long productId = getProductIdFromUrl(request);
         int quantity;
         try {
-            String quantityValue = request.getParameter(QUANTITY);
-            if (!quantityValue.matches("^\\d+$")) {
-                throw new NumberFormatException();
-            }
-            NumberFormat format = NumberFormat.getInstance(request.getLocale());
-            quantity = format.parse(quantityValue).intValue();
+            quantity = validateQuantity(request);
             Cart cart = cartService.getCart(request);
             cartService.add(cart, productId, quantity);
-        } catch (ParseException | NumberFormatException e) {
-            request.setAttribute(ERROR, "Not a number");
-            doGet(request, response);
-            return;
-        } catch (OutOfStockException e) {
+        } catch (ParseException | NumberFormatException | OutOfStockException e) {
             request.setAttribute(ERROR, e.getMessage());
             doGet(request, response);
             return;
         }
         response.sendRedirect(String.format("%s/products/%d?message=Added to card successfully", request.getContextPath(), productId));
+    }
+
+    private int validateQuantity(HttpServletRequest request) throws ParseException {
+        String quantityValue = request.getParameter(QUANTITY);
+        if (!quantityValue.matches("^[1-9]|[1-9]\\d+$")) {
+            throw new NumberFormatException("Not a number or quantity should be greater then 0");
+        }
+        NumberFormat format = NumberFormat.getInstance(request.getLocale());
+        return format.parse(quantityValue).intValue();
     }
 
     private Long getProductIdFromUrl(HttpServletRequest request) {
