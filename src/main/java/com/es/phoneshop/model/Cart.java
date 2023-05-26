@@ -10,6 +10,7 @@ public class Cart implements Serializable {
     private List<CartItem> cartItems;
     private int totalQuantity;
     private BigDecimal totalCost;
+    private static final long serialVersionUID = 1116L;
 
     public Cart() {
         this.cartItems = new ArrayList<>();

@@ -22,6 +22,7 @@ public class Product implements Serializable {
     private int stock;
     private String imageUrl;
     private List<PriceHistory> priceHistory = new ArrayList<>();
+    private static final long serialVersionUID = 1115L;
 
     public Product() {
     }

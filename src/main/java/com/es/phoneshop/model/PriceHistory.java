@@ -11,6 +11,7 @@ public class PriceHistory implements Serializable {
     private BigDecimal price;
     private Currency currency;
     private Product product;
+    private static final long serialVersionUID = 1114L;
 
     public PriceHistory() {
     }

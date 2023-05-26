@@ -63,8 +63,8 @@ public class ProductListPageServlet extends HttpServlet {
 
     private int validateQuantity(HttpServletRequest request) throws ParseException {
         String quantityValue = request.getParameter(QUANTITY);
-        if (!quantityValue.matches("^\\d+$")) {
-            throw new NumberFormatException("Not a number");
+        if (!quantityValue.matches("^[1-9]|[1-9]\\d+$")) {
+            throw new NumberFormatException("Not a number or quantity should be greater then 0");
         }
         NumberFormat format = NumberFormat.getInstance(request.getLocale());
         return format.parse(quantityValue).intValue();
