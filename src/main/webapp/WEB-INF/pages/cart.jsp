@@ -43,10 +43,11 @@
                     <td>
                         <fmt:formatNumber value="${cartItem.quantity}" var="quantity"/>
                         <c:set var="error" value="${errors[cartItem.product.id]}"/>
-                        <input name="quantity" value="${not empty error ? paramValues['quantity'][status.index] : cartItem.quantity}">
+                        <input name="quantity"
+                               value="${not empty error ? paramValues['quantity'][status.index] : cartItem.quantity}">
                         <c:if test="${not empty error}">
                             <p class="error">
-                                ${errors[cartItem.product.id]}
+                                    ${errors[cartItem.product.id]}
                             </p>
                         </c:if>
                         <input name="productId" type="hidden" value="${cartItem.product.id}">
@@ -60,7 +61,10 @@
                         </a>
                     </td>
                     <td>
-                        <button form="deleteCartItem" formaction="${pageContext.servletContext.contextPath}/cart/deleteCartItem/${cartItem.product.id}">Delete</button>
+                        <button form="deleteCartItem"
+                                formaction="${pageContext.servletContext.contextPath}/cart/deleteCartItem/${cartItem.product.id}">
+                            Delete
+                        </button>
                     </td>
                 </tr>
             </c:forEach>
@@ -76,6 +80,11 @@
                 <button>Update</button>
             </c:if>
         </p>
+    </form>
+    <form action="${pageContext.servletContext.contextPath}/checkout">
+        <c:if test="${not empty cartItems}">
+            <button>Checkout</button>
+        </c:if>
     </form>
     <form id="deleteCartItem" method="post"></form>
 </tags:master>
