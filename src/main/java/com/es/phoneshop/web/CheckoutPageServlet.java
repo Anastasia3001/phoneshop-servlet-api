@@ -70,7 +70,8 @@ public class CheckoutPageServlet extends HttpServlet {
         setPaymentMethod(request, errors, order);
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
-            response.sendRedirect(String.format("%s/overview/%d", request.getContextPath(), order.getId()));
+            cartService.clearCart(cart);
+            response.sendRedirect(String.format("%s/order/overview/%s", request.getContextPath(), order.getSecureId()));
         } else {
             request.setAttribute(ERRORS, errors);
             request.setAttribute(ORDER, order);

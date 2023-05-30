@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Order extends Cart{
+    private String secureId;
     private Long id;
     private BigDecimal subtotal;
     private BigDecimal deliveryCost;
@@ -105,5 +106,13 @@ public class Order extends Cart{
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getSecureId() {
+        return secureId;
+    }
+
+    public void setSecureId(String secureId) {
+        this.secureId = secureId;
     }
 }

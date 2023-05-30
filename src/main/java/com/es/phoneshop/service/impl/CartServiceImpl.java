@@ -95,6 +95,15 @@ public class CartServiceImpl implements CartService {
         });
     }
 
+    @Override
+    public void clearCart(Cart cart) {
+        lock.write(() -> {
+            cart.getCartItems().clear();
+            cart.setTotalQuantity(0);
+            cart.setTotalCost(BigDecimal.valueOf(0));
+        });
+    }
+
     private void calculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getCartItems().stream()
                 .mapToInt(cartItem -> cartItem.getQuantity())

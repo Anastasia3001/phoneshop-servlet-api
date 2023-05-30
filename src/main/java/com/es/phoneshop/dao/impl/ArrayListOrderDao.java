@@ -51,6 +51,18 @@ public class ArrayListOrderDao implements OrderDao {
     }
 
     @Override
+    public Order getOrderBySecureId(String secureId) {
+        return lock.read(() -> {
+            Optional.ofNullable(secureId)
+                    .orElseThrow(() -> new IllegalArgumentException("Unable to find order with null id"));
+            return orders.stream()
+                    .filter(order -> order.getSecureId().equals(secureId))
+                    .findAny()
+                    .orElseThrow(() -> new OrderNotFoundException("Order with id " + secureId + " not found"));
+        });
+    }
+
+    @Override
     public void save(Order order) {
         lock.write(() -> {
             Optional.ofNullable(order)
