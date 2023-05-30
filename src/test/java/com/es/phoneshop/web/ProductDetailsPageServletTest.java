@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
