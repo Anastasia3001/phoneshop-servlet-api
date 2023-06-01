@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cart implements Serializable {
+public class Cart extends IdentifiableItem implements Serializable {
     private Long id;
     private List<CartItem> cartItems;
     private int totalQuantity;

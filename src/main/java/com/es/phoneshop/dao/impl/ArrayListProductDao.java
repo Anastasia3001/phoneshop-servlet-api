@@ -1,6 +1,6 @@
 package com.es.phoneshop.dao.impl;
 
-import com.es.phoneshop.FunctionalReadWriteLock;
+import com.es.phoneshop.dao.GenericDao;
 import com.es.phoneshop.dao.ProductDao;
 import com.es.phoneshop.enums.SortingField;
 import com.es.phoneshop.enums.SortingType;
@@ -12,19 +12,14 @@ import com.es.phoneshop.model.comparator.DescriptionComparator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ArrayListProductDao implements ProductDao {
-    private List<Product> products;
-    private final AtomicLong id;
-    private final FunctionalReadWriteLock lock;
+public class ArrayListProductDao extends GenericDao<Product> implements ProductDao {
 
     private ArrayListProductDao() {
-        products = new ArrayList<>();
-        id = new AtomicLong();
-        lock = new FunctionalReadWriteLock();
+        id = 0L;
+        items = new ArrayList<>();
     }
 
     public static ArrayListProductDao getInstance() {
@@ -40,7 +35,7 @@ public class ArrayListProductDao implements ProductDao {
         return lock.read(() -> {
             Optional.ofNullable(id)
                     .orElseThrow(() -> new IllegalArgumentException("Unable to find product with null id"));
-            return products.stream()
+            return items.stream()
                     .filter(product -> product.getId().equals(id))
                     .findAny()
                     .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
@@ -50,7 +45,7 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public List<Product> findProducts(String description, SortingField sortingField, SortingType sortingType) {
         return lock.read(() -> {
-            List<Product> foundProducts = products.stream()
+            List<Product> foundProducts = items.stream()
                     .filter(product -> product.getPrice() != null && product.getStock() > 0)
                     .filter(product -> description == null || description.isEmpty() || countMatchingWords(product.getDescription(), description) != 0)
                     .sorted(new DescriptionComparator(description))
@@ -75,11 +70,11 @@ public class ArrayListProductDao implements ProductDao {
                     .ifPresentOrElse(
                             (id) -> {
                                 Product foundProduct = getProduct(product.getId());
-                                products.set(products.indexOf(foundProduct), product);
+                                items.set(items.indexOf(foundProduct), product);
                             },
                             () -> {
-                                product.setId(id.incrementAndGet());
-                                products.add(product);
+                                product.setId(id++);
+                                items.add(product);
                             });
         });
     }
@@ -87,7 +82,7 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public void delete(Long id) {
         lock.write(() -> {
-            products.removeIf(product -> product.getId().equals(id));
+            items.removeIf(product -> product.getId().equals(id));
         });
     }
 }

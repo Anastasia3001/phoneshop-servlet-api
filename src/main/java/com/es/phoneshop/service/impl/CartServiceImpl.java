@@ -96,11 +96,11 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void clearCart(Cart cart) {
+    public void clearCart(Cart cart, HttpServletRequest httpServletRequest) {
         lock.write(() -> {
-            cart.getCartItems().clear();
-            cart.setTotalQuantity(0);
-            cart.setTotalCost(BigDecimal.valueOf(0));
+            cart.getCartItems().stream()
+                    .forEach(item -> item.getProduct().setStock(item.getProduct().getStock() - item.getQuantity()));
+            httpServletRequest.getSession(false).removeAttribute(SEPARATE_CART_SESSION_ATTRIBUTE);
         });
     }
 

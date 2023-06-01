@@ -1,6 +1,6 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.security.DosProtectionService;
+import com.es.phoneshop.service.security.DosProtectionService;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;

@@ -35,13 +35,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getOrder(Cart cart) {
         Order order = new Order();
-        order.setCartItems(cart.getCartItems().stream().map(item -> {
-            try {
-                return (CartItem) item.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList()));
+        order.setCartItems(cart.getCartItems().stream()
+                .map(item -> (CartItem) item.clone())
+                .collect(Collectors.toList()));
         order.setSubtotal(cart.getTotalCost());
         order.setDeliveryCost(calculateDeliveryCost());
         order.setTotalCost(order.getSubtotal().add(order.getDeliveryCost()));

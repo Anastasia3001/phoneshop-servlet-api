@@ -39,6 +39,8 @@ public class CheckoutPageServlet extends HttpServlet {
     private static final String FIRST_NAME_ERROR_MESSAGE = "First name must contain letters a-zA-Z";
     private static final String LAST_NAME_ERROR_MESSAGE = "Last name must contain letters a-zA-Z";
     private static final String PHONE_ERROR_MESSAGE = "Phone must match the template +375(29|44|25|33)###-##-##";
+    private static final String REGEX_FOR_NAME = "^[A-Za-z -]+$";
+    private static final String REGEX_FOR_PHONE = "^\\+375\\((29|44|25|33)\\)[0-9]{3}-[0-9]{2}-[0-9]{2}$";
     private static final String ERRORS = "errors";
     private static final String CHECKOUT_JSP = "/WEB-INF/pages/checkout.jsp";
 
@@ -70,7 +72,7 @@ public class CheckoutPageServlet extends HttpServlet {
         setPaymentMethod(request, errors, order);
         if (errors.isEmpty()) {
             orderService.placeOrder(order);
-            cartService.clearCart(cart);
+            cartService.clearCart(cart, request);
             response.sendRedirect(String.format("%s/order/overview/%s", request.getContextPath(), order.getSecureId()));
         } else {
             request.setAttribute(ERRORS, errors);
@@ -84,11 +86,11 @@ public class CheckoutPageServlet extends HttpServlet {
         String value = request.getParameter(parameter);
         if (value == null || value.isEmpty()) {
             errors.put(parameter, MESSAGE);
-        } else if (parameter.equals(FIRST_NAME) && !value.matches("^[A-Za-z -]+$")) {
+        } else if (parameter.equals(FIRST_NAME) && !value.matches(REGEX_FOR_NAME)) {
             errors.put(parameter, FIRST_NAME_ERROR_MESSAGE);
-        } else if (parameter.equals(LAST_NAME) && !value.matches("^[A-Za-z -]+$")) {
+        } else if (parameter.equals(LAST_NAME) && !value.matches(REGEX_FOR_NAME)) {
             errors.put(parameter, LAST_NAME_ERROR_MESSAGE);
-        } else if (parameter.equals(PHONE) && !value.matches("^\\+375\\((29|44|25|33)\\)[0-9]{3}-[0-9]{2}-[0-9]{2}$")) {
+        } else if (parameter.equals(PHONE) && !value.matches(REGEX_FOR_PHONE)) {
             errors.put(parameter, PHONE_ERROR_MESSAGE);
         } else {
             consumer.accept(value);

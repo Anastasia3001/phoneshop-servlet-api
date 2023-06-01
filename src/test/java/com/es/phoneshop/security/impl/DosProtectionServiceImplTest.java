@@ -1,5 +1,6 @@
 package com.es.phoneshop.security.impl;
 
+import com.es.phoneshop.service.security.impl.DosProtectionServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

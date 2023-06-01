@@ -34,9 +34,13 @@ public class CartItem implements Serializable, Cloneable {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        CartItem cartItem = (CartItem) super.clone();
-        cartItem.setProduct((Product) this.getProduct().clone());
-        return cartItem;
+    public Object clone() {
+        try {
+            CartItem cartItem = (CartItem) super.clone();
+            cartItem.setProduct((Product) this.getProduct().clone());
+            return cartItem;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
