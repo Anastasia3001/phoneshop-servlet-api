@@ -95,6 +95,15 @@ public class CartServiceImpl implements CartService {
         });
     }
 
+    @Override
+    public void clearCart(Cart cart, HttpServletRequest httpServletRequest) {
+        lock.write(() -> {
+            cart.getCartItems().stream()
+                    .forEach(item -> item.getProduct().setStock(item.getProduct().getStock() - item.getQuantity()));
+            httpServletRequest.getSession(false).removeAttribute(SEPARATE_CART_SESSION_ATTRIBUTE);
+        });
+    }
+
     private void calculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getCartItems().stream()
                 .mapToInt(cartItem -> cartItem.getQuantity())

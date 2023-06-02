@@ -26,6 +26,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
     private static final String QUANTITY = "quantity";
     private static final String ERROR = "error";
     private static final String RECENTLY_VIEWED_PRODUCTS = "recentlyViewedProducts";
+    private static final String REGEX_FOR_QUANTITY = "^[1-9]|[1-9]\\d+$";
     private static final String PRODUCT_DETAILS_JSP = "/WEB-INF/pages/productDetails.jsp";
 
     @Override
@@ -63,7 +64,7 @@ public class ProductDetailsPageServlet extends HttpServlet {
 
     private int validateQuantity(HttpServletRequest request) throws ParseException {
         String quantityValue = request.getParameter(QUANTITY);
-        if (!quantityValue.matches("^[1-9]|[1-9]\\d+$")) {
+        if (!quantityValue.matches(REGEX_FOR_QUANTITY)) {
             throw new NumberFormatException("Not a number or quantity should be greater then 0");
         }
         NumberFormat format = NumberFormat.getInstance(request.getLocale());

@@ -1,12 +1,14 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.dao.PriceHistoryDao;
-import com.es.phoneshop.dao.ProductDao;
-import com.es.phoneshop.model.Product;
+import com.es.phoneshop.model.Cart;
+import com.es.phoneshop.model.Order;
+import com.es.phoneshop.service.CartService;
+import com.es.phoneshop.service.OrderService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -19,38 +21,44 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PriceHistoryPageServletTest {
-    @Mock
-    private ProductDao productDao;
-    @Mock
-    private PriceHistoryDao priceHistoryDao;
+public class CheckoutPageServletTest {
     @Mock
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
     @Mock
     private RequestDispatcher requestDispatcher;
-    private PriceHistoryPageServlet servlet = new PriceHistoryPageServlet();
-    private static final String PRODUCT_ID_FROM_URL = "/1";
-    private static final Long PRODUCT_ID = 1L;
+    @Mock
+    private CartService cartService;
+    @Mock
+    private OrderService orderService;
+    private CheckoutPageServlet servlet = new CheckoutPageServlet();
+    private Cart cart = new Cart();
+    private Order order = new Order();
 
-    @Test
-    public void testInit() {
-        servlet.init();
+    @Before
+    public void setup() {
         when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
     }
 
     @Test
     public void testDoGet() throws ServletException, IOException {
-        Product product = new Product();
-        product.setId(PRODUCT_ID);
-        when(request.getPathInfo()).thenReturn(PRODUCT_ID_FROM_URL);
-        when(productDao.getProduct(anyLong())).thenReturn(product);
-        when(priceHistoryDao.getPriceHistoryOfProduct(anyLong())).thenReturn(product.getPriceHistory());
+        when(cartService.getCart(request)).thenReturn(cart);
 
         servlet.doGet(request, response);
 
+        verify(request).setAttribute(anyString(), any());
         verify(request).setAttribute(anyString(), anyList());
         verify(requestDispatcher).forward(request, response);
+    }
+
+    @Test
+    public void testDoPost() throws ServletException, IOException {
+        when(cartService.getCart(request)).thenReturn(cart);
+        when(orderService.getOrder(any())).thenReturn(order);
+
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect(anyString());
     }
 }

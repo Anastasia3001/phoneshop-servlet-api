@@ -7,7 +7,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 
-public class Product implements Serializable {
+public class Product extends IdentifiableItem implements Serializable, Cloneable {
     private Long id;
     private String code;
     private String description;
@@ -121,5 +121,14 @@ public class Product implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(code, description, price, currency, stock, imageUrl, priceHistory);
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
