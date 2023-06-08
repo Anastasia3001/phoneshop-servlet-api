@@ -22,6 +22,9 @@
         <input type="text" name="description" value="${param.description}">
         <button>Search</button>
     </form>
+    <form action="${pageContext.servletContext.contextPath}/products/advancedSearch">
+        <button>Advanced search</button>
+    </form>
     <table>
         <thead>
         <tr>

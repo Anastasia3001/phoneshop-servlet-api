@@ -1,15 +1,18 @@
 package com.es.phoneshop.dao;
 
+import com.es.phoneshop.enums.SearchingType;
 import com.es.phoneshop.enums.SortingField;
 import com.es.phoneshop.enums.SortingType;
 import com.es.phoneshop.model.Product;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductDao {
     Product getProduct(Long id);
 
     List<Product> findProducts(String description, SortingField sortingField, SortingType sortingType);
+    List<Product> findProductsByAdvancedSearching(String description, BigDecimal minPrice, BigDecimal maxPrice, SearchingType searchingType);
 
     void save(Product product);
 

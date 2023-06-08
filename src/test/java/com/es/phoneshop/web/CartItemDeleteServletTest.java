@@ -25,22 +25,14 @@ public class CartItemDeleteServletTest {
     private HttpServletRequest request;
     @Mock
     private HttpServletResponse response;
-    @Mock
-    private RequestDispatcher requestDispatcher;
-    @Mock
-    private CartServiceImpl cartService;
     private CartItemDeleteServlet servlet = new CartItemDeleteServlet();
     @Before
     public void setup() {
         servlet.init();
-        when(request.getRequestDispatcher(anyString())).thenReturn(requestDispatcher);
     }
     @Test
     public void testDoPost() throws IOException, ServletException {
         when(request.getPathInfo()).thenReturn("/1");
-        Cart cart = new Cart();
-        cart.setId(1L);
-        when(cartService.getCart(any())).thenReturn(cart);
 
         servlet.doPost(request, response);
 

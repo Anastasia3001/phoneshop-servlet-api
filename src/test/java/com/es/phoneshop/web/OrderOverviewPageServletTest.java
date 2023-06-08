@@ -10,15 +10,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import static org.mockito.Mockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(ArrayListOrderDao.class)
+@RunWith(MockitoJUnitRunner.class)
 public class OrderOverviewPageServletTest {
     @Mock
     private HttpServletRequest request;
@@ -32,11 +29,10 @@ public class OrderOverviewPageServletTest {
 
     @Test
     public void testDoGet() throws ServletException, IOException {
-        OrderDao orderDao = PowerMockito.mock(ArrayListOrderDao.class);
         Order order = new Order();
         order.setSecureId(SECURE_ID);
         when(request.getPathInfo()).thenReturn(ORDER_SECURE_ID_FROM_URL);
-        when(orderDao.getOrderBySecureId(anyString())).thenReturn(order);
+//        when(orderDao.getOrderBySecureId(anyString())).thenReturn(order);
 
         servlet.doGet(request, response);
 

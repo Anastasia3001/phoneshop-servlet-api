@@ -2,6 +2,7 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.GenericDao;
 import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.enums.SearchingType;
 import com.es.phoneshop.enums.SortingField;
 import com.es.phoneshop.enums.SortingType;
 import com.es.phoneshop.exception.ProductNotFoundException;
@@ -9,6 +10,7 @@ import com.es.phoneshop.model.Product;
 import com.es.phoneshop.model.comparator.DescriptionAndPriceComparator;
 import com.es.phoneshop.model.comparator.DescriptionComparator;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +54,27 @@ public class ArrayListProductDao extends GenericDao<Product> implements ProductD
                     .sorted(new DescriptionAndPriceComparator(sortingField, sortingType))
                     .collect(Collectors.toList());
             return foundProducts;
+        });
+    }
+
+    @Override
+    public List<Product> findProductsByAdvancedSearching(String description, BigDecimal minPrice, BigDecimal maxPrice, SearchingType searchingType) {
+        return lock.read(() -> {
+            if (SearchingType.ALL_WORDS == searchingType) {
+                return items.stream()
+                        .filter(product -> description == null || description.isEmpty())
+                        .filter(item->item.getDescription().equals(description))
+                        .filter(item-> (item.getPrice().compareTo(minPrice)) >= 0 &&
+                                (item.getPrice().compareTo(maxPrice)) <= 0)
+                        .collect(Collectors.toList());
+            } else {
+                return items.stream()
+                        .filter(product -> description == null || description.isEmpty())
+                        .filter(item-> description != null && item.getDescription().contains(description))
+                        .filter(item-> (item.getPrice().compareTo(minPrice)) >= 0 &&
+                                (item.getPrice().compareTo(maxPrice)) <= 0)
+                        .collect(Collectors.toList());
+            }
         });
     }
 
