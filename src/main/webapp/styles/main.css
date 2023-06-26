@@ -27,8 +27,26 @@ td {
 img.product-tile {
   max-width: 64px;
 }
-
-/* Page specific styles */
-body.product-list {
-
+.error {
+  color: red;
+}
+.errorGeneral {
+  color: red;
+  font-size: 21px;
+}
+.message {
+  color: limegreen;
+  font-size: 21px;
+}
+#mainDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-gap: 50px;
+}
+td {
+  text-align: center;
+}
+h1 {
+  text-align: center;
 }

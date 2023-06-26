@@ -1,15 +1,13 @@
 package com.es.phoneshop.exception;
 
-import java.util.NoSuchElementException;
-
-public class ProductNotFoundException extends NoSuchElementException {
+public class OutOfStockException extends RuntimeException {
     private String message;
 
-
-    public ProductNotFoundException(String message) {
+    public OutOfStockException(String message) {
         this.message = message;
     }
 
+    @Override
     public String getMessage() {
         return message;
     }

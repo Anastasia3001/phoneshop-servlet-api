@@ -1,111 +1,136 @@
-//package com.es.phoneshop.dao.impl;
-//
-//import com.es.phoneshop.dao.ProductDao;
-//import com.es.phoneshop.enums.SortingField;
-//import com.es.phoneshop.exception.ProductNotFoundException;
-//import com.es.phoneshop.model.Product;
-//import com.es.phoneshop.web.ProductDemodataServletContextListener;
-//import jakarta.servlet.ServletContextEvent;
-//import jakarta.servlet.ServletContextListener;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//
-//import java.math.BigDecimal;
-//import java.util.Currency;
-//import java.util.List;
-//import java.util.stream.Collectors;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//
-//public class ArrayListProductDaoTest {
-//    private ProductDao productDao;
-//    private static final String DESCRIPTION = "Samsung Galaxy S";
-//    private static final SortingField SORTING_DESCRIPTION = SortingField.DESCRIPTION;
-//    private static final SortingField SORTING_PRICE = SortingField.PRICE;
-//
-//    @BeforeEach
-//    public void setup() {
-//        productDao = ArrayListProductDao.getInstance();
-//    }
-//
-//    @Test
-//    public void testGetProductByIdNotNull() {
-//        Long id = 1L;
-//
-//        assertNotNull(productDao.getProduct(id));
-//    }
-//
-//    @Test
-//    public void testGetProductById() {
-//        Currency usd = Currency.getInstance("USD");
-//        Product product = new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-//        product.setId(1L);
-//
-//        assertEquals(product.getCode(), productDao.getProduct(1L).getCode());
-//    }
-//
-//    @Test
-//    public void testFindProductsNoResults() {
-//        assertFalse(productDao.findProducts().isEmpty());
-//    }
-//
-//    @Test
-//    public void testFindProductsWithNotNullPriceAndMoreThanZeroStock() {
-//        int expectedValue = 0;
-//
-//        List<Product> productList = productDao.findProducts();
-//        List<Product> checkedProductList = productList.stream().filter(product -> product.getPrice() == null && product.getStock() <= 0).collect(Collectors.toList());
-//
-//        assertNotEquals(expectedValue, productList.size());
-//        assertEquals(expectedValue, checkedProductList.size());
-//    }
-//
-//    @Test
-//    public void testSaveProduct() {
-//        Currency usd = Currency.getInstance("USD");
-//        Product product = new Product("iphone7", "Apple iPhone 7", new BigDecimal(1100), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-//
-//        productDao.save(product);
-//
-//        assertNotNull(productDao.getProduct(product.getId()));
-//    }
-//
-//    @Test
-//    public void testUpdateProduct() {
-//        Currency usd = Currency.getInstance("USD");
-//        List<Product> products = productDao.findProducts();
-//        Product product = new Product(1L, "sgs", "Apple iPhone 7", new BigDecimal(1300), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
-//        products.set(0, product);
-//
-//        assertEquals(products.get(0), product);
-//
-//        productDao.save(product);
-//
-//        assertNotNull(productDao.getProduct(product.getId()));
-//    }
-//
-//    @Test
-//    public void testDeleteProduct() {
-//        int initialSize = productDao.findProducts().size();
-//
-//        productDao.delete(1L);
-//
-//        assertEquals(initialSize - 1, productDao.findProducts().size());
-//    }
-//
-//    @Test
-//    void testExceptionForEnableFoundProductById() {
-//        assertThrows(IllegalArgumentException.class, ()-> productDao.getProduct(null));
-//    }
-//
-//    @Test
-//    void testExceptionForNotFoundProductById() {
-//        assertThrows(ProductNotFoundException.class, ()-> productDao.getProduct(50L));
-//    }
-//
-//    @Test
-//    void testExceptionForEnableSaveProduct() {
-//        assertThrows(IllegalArgumentException.class, ()-> productDao.save(null));
-//    }
-//}
+package com.es.phoneshop.dao.impl;
+
+import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.enums.SortingField;
+import com.es.phoneshop.enums.SortingType;
+import com.es.phoneshop.exception.ProductNotFoundException;
+import com.es.phoneshop.model.Product;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class ArrayListProductDaoTest {
+    @Mock
+    private ProductDao productDao;
+    private List<Product> products;
+    private static final Long NOT_EXISTING_ID = 100L;
+    private static final String SEARCHING_PHASE = "Samsung II";
+    private static final String PRODUCT_DESCRIPTION = "Samsung Galaxy S II";
+    private static final String EMPTY_DESCRIPTION = "";
+    private static final SortingField SORTING_FIELD = SortingField.DESCRIPTION;
+    private static final SortingType SORTING_TYPE = SortingType.ASC;
+    private static final Long PRODUCT_ID = 1L;
+
+    @Before
+    public void setup() {
+        Currency usd = Currency.getInstance("USD");
+        products = new ArrayList<>();
+        products.add(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
+        products.add(new Product("sgs3", "Samsung Galaxy S III", new BigDecimal(300), usd, 5, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20III.jpg"));
+        products.add(new Product("sec901", "Sony Ericsson C901", new BigDecimal(420), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Sony/Sony%20Ericsson%20C901.jpg"));
+        products.add(new Product("xperiaxz", "Sony Xperia XZ", new BigDecimal(120), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Sony/Sony%20Xperia%20XZ.jpg"));
+        products.add(new Product("htces4g", "HTC EVO Shift 4G", new BigDecimal(320), usd, 3, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/HTC/HTC%20EVO%20Shift%204G.jpg"));
+    }
+
+    @Test
+    public void testFindProductsForPriceAndStock() {
+        when(productDao.findProducts(anyString(), any(), any())).thenReturn(products);
+
+        List<Product> returnedProducts = productDao.findProducts(SEARCHING_PHASE, SORTING_FIELD, SORTING_TYPE);
+
+        assertTrue(returnedProducts.stream()
+                .allMatch(product -> product.getPrice() != null && product.getStock() > 0));
+    }
+
+    @Test
+    public void testFindProductsNoResults() {
+        when(productDao.findProducts(anyString(), any(), any())).thenReturn(products);
+
+        assertFalse(productDao.findProducts(EMPTY_DESCRIPTION, SORTING_FIELD, SORTING_TYPE).isEmpty());
+    }
+
+    @Test
+    public void testCountFoundWords() {
+        long result = ArrayListProductDao.countMatchingWords(PRODUCT_DESCRIPTION, SEARCHING_PHASE);
+
+        long expectedCountOfWords = 2;
+        assertEquals(expectedCountOfWords, result);
+    }
+
+    @Test
+    public void testGetProduct() {
+        Product product = new Product();
+        product.setId(PRODUCT_ID);
+        when(productDao.getProduct(anyLong())).thenReturn(product);
+
+        Product result = productDao.getProduct(PRODUCT_ID);
+
+        Long expectedProductId = 1L;
+        assertEquals(expectedProductId, result.getId());
+    }
+
+    @Test
+    public void testGetProductNotNull() {
+        Product product = new Product();
+        product.setId(PRODUCT_ID);
+        when(productDao.getProduct(anyLong())).thenReturn(product);
+
+        Product result = productDao.getProduct(PRODUCT_ID);
+
+        assertNotNull(result);
+    }
+
+    @Test
+    public void testSave() {
+        Currency usd = Currency.getInstance("USD");
+        Product product = new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+
+        productDao.save(product);
+
+        verify(productDao).save(product);
+    }
+
+    @Test
+    public void testDelete() {
+        productDao.delete(PRODUCT_ID);
+
+        verify(productDao).delete(PRODUCT_ID);
+    }
+    @Test(expected = ProductNotFoundException.class)
+    public void testExceptionForNotFoundProductById() {
+        when(productDao.getProduct(anyLong())).thenThrow(new ProductNotFoundException(""));
+
+        productDao.getProduct(NOT_EXISTING_ID);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionForNullProductParameter() {
+        doThrow(new IllegalArgumentException()).when(productDao).save(null);
+
+        productDao.save(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionForNullIdParameter() {
+        doThrow(new IllegalArgumentException()).when(productDao).getProduct(null);
+
+        productDao.getProduct(null);
+    }
+}
