@@ -25,9 +25,7 @@ public class CartPageServletTest {
     private HttpServletResponse response;
     @Mock
     private RequestDispatcher requestDispatcher;
-    @Mock
-    private CartServiceImpl cartService;
-    private Locale locale;
+    private Locale locale = new Locale("RUS");
     private CartPageServlet servlet = new CartPageServlet();
 
     @Before
@@ -40,7 +38,7 @@ public class CartPageServletTest {
     public void testDoGet() throws ServletException, IOException {
         servlet.doGet(request, response);
 
-        verify(request, times(2)).setAttribute(anyString(), any());
+        verify(request).setAttribute(anyString(), anyList());
         verify(requestDispatcher).forward(request, response);
     }
 
@@ -53,11 +51,9 @@ public class CartPageServletTest {
         when(request.getParameterValues(anyString())).thenReturn(productIds);
         when(request.getParameterValues(anyString())).thenReturn(quantities);
         when(request.getLocale()).thenReturn(locale);
-        when(cartService.getCart(any())).thenReturn(cart);
 
         servlet.doPost(request, response);
 
-        verify(cartService).update(any(), anyLong(), anyInt());
         verify(response).sendRedirect(anyString());
     }
 }

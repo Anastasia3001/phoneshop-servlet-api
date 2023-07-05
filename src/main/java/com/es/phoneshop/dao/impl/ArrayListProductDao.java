@@ -2,6 +2,7 @@ package com.es.phoneshop.dao.impl;
 
 import com.es.phoneshop.dao.GenericDao;
 import com.es.phoneshop.dao.ProductDao;
+import com.es.phoneshop.enums.SearchingType;
 import com.es.phoneshop.enums.SortingField;
 import com.es.phoneshop.enums.SortingType;
 import com.es.phoneshop.exception.ProductNotFoundException;
@@ -9,6 +10,7 @@ import com.es.phoneshop.model.Product;
 import com.es.phoneshop.model.comparator.DescriptionAndPriceComparator;
 import com.es.phoneshop.model.comparator.DescriptionComparator;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

@@ -60,3 +60,21 @@ select {
 body.product-list {
 
 }
+.label {
+  display: block;
+  width: 60px;
+}
+.tableForAdvancedSearch {
+  border: none;
+}
+.tableForAdvancedSearch td,  .tableForAdvancedSearch tr{
+  text-align: left;
+  border: none;
+}
+#title {
+    text-align: left;
+}
+.padding {
+  margin-left: 10px;
+}
+  

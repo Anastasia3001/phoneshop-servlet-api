@@ -1,9 +1,11 @@
 package com.es.phoneshop.dao;
 
+import com.es.phoneshop.enums.SearchingType;
 import com.es.phoneshop.enums.SortingField;
 import com.es.phoneshop.enums.SortingType;
 import com.es.phoneshop.model.Product;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductDao {
