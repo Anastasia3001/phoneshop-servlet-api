@@ -57,27 +57,6 @@ public class ArrayListProductDao extends GenericDao<Product> implements ProductD
         });
     }
 
-    @Override
-    public List<Product> findProductsByAdvancedSearching(String description, BigDecimal minPrice, BigDecimal maxPrice, SearchingType searchingType) {
-        return lock.read(() -> {
-            if (SearchingType.ALL_WORDS == searchingType) {
-                return items.stream()
-                        .filter(product -> description == null || description.isEmpty())
-                        .filter(item->item.getDescription().equals(description))
-                        .filter(item-> (item.getPrice().compareTo(minPrice)) >= 0 &&
-                                (item.getPrice().compareTo(maxPrice)) <= 0)
-                        .collect(Collectors.toList());
-            } else {
-                return items.stream()
-                        .filter(product -> description == null || description.isEmpty())
-                        .filter(item-> description != null && item.getDescription().contains(description))
-                        .filter(item-> (item.getPrice().compareTo(minPrice)) >= 0 &&
-                                (item.getPrice().compareTo(maxPrice)) <= 0)
-                        .collect(Collectors.toList());
-            }
-        });
-    }
-
     public static long countMatchingWords(String productDescription, String description) {
         return Stream.of(description.split("[^A-Za-z0-9I]+"))
                 .filter(word -> productDescription.contains(word))

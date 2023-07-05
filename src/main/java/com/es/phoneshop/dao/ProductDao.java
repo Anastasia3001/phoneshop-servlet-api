@@ -12,7 +12,6 @@ public interface ProductDao {
     Product getProduct(Long id);
 
     List<Product> findProducts(String description, SortingField sortingField, SortingType sortingType);
-    List<Product> findProductsByAdvancedSearching(String description, BigDecimal minPrice, BigDecimal maxPrice, SearchingType searchingType);
 
     void save(Product product);
 
